@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider="mysql"
+  url= env("DATABASE_URL")
+}
+
+//npx prisma migrate dev
+
+model User {
+
+  id Int @id @default(autoincrement()) 
+  email String @unique
+  password String
+
+  profile Profile? // one to one 
+ 
+  post Post[]     // one to many , akta user onk gulo post korte parbe
+
+  comment Comment[]  //  many to many, akta user onk gulo comment korte parbe
+
+}
+
+model Profile {
+  id Int @id @default(autoincrement()) 
+  firstName String
+  lastName String
+  mobile String
+  city String
+
+  userID Int @unique
+  User User @relation(fields: [userID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+}
+
+
+model Post {
+  id  Int  @id @default(autoincrement())
+  title String
+  description String @db.LongText
+
+  userID Int
+  User User @relation(fields: [userID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+
+  comment Comment[] //  many to many , akta ba onk gulo post er jonno onk gulo comment thakbe.
+}
+
+
+model Comment {
+  id    Int    @id @default(autoincrement())
+  text String
+
+  userID Int
+  User User @relation(fields: [userID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+
+  postID Int
+  post Post @relation(fields: [postID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+}

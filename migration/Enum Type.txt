@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider="mysql"
+  url= env("DATABASE_URL")
+}
+
+//npx prisma migrate dev
+একটি enum টাইপ তৈরি করতে, আপনি মডেলে একটি ফিল্ড ডিফাইন করে তার মানগুলির একটি সেট স্পেসিফাই করতে 
+পারেন, এবং সেই মানগুলি নির্দিষ্ট এনাম দেবেন যা এই ফিল্ডে ব্যবহৃত হতে পারে।
+
+উদাহরণস্বরূপ, আমরা একটি User মডেলে একটি role ফিল্ড ডিফাইন করতে চাই, 
+যা ব্যবহারকারীর ভূমিকা নির্দেশ করে। আমরা এই role ফিল্ডটির জন্য একটি enum টাইপ তৈরি করতে পারি এবং 
+তাতে অধিক ডিস্ক্রিট মানগুলি যোগ করতে পারি, যেমন "ADMIN", "USER", "GUEST" ইত্যাদি। এরপর, 
+যখন আমরা এই মডেল ব্যবহার করি ডেটাবেসে, তখন আমরা এই role ফিল্ডের মান সেট করতে হলে 
+এই মানগুলির মধ্যে একটি নির্বাচন করতে পারি।
+
+সংক্ষেপে, enum টাইপ প্রিজমা মডেলে ডেটাবেসে ডিস্ক্রিট মানগুলি সংরক্ষণ করতে ব্যবহার করা হয়, 
+যা নির্দিষ্ট মান সেট এবং মডেল ফিল্ডের মান সেট করতে সাহায্য করে
+
+enum UserType {
+  New
+  Existing
+}
+
+model User {
+  id    Int       @id @default(autoincrement())
+  role  UserType
+}

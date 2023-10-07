@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider="mysql"
+  url= env("DATABASE_URL")
+}
+
+//npx prisma migrate dev
+
+
+model User {
+
+  id Int @id @default(autoincrement()) // Primary key  , Integer length 11  & Auto Increment Equivalent Column
+  col1 Boolean // Boolean Equivalent Column
+  col3 String @db.Char(100) // Char Length 100 Equivalent Column
+
+}

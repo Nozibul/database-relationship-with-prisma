@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// npx prisma migrate dev
+
+model User {
+  
+  id Int @id @default(autoincrement()) // Primary key  , Integer length 11  & Auto Increment Equivalent Column
+  col1 Int @db.UnsignedInt // UNSIGNED Integer length 11  Equivalent Column
+
+
+  col2  BigInt  // Big Integer length 20  Equivalent Column
+  col3  BigInt @db.UnsignedBigInt  // UNSIGNED Big Integer length 20  Equivalent Column
+  
+  col4  Int @db.SmallInt // Small Integer length 6 Equivalent Column //"SmallInt" দেখাচ্ছে যে এই ফিল্ডে ছোট একটি সংখ্যা স্টোর হবে, 
+  যা সাধারণ সংখ্যার সীমার ভিত্তিতে কিছুটা ছোট হতে পারে। এই ফিল্ডের মান সাধারণভাবে একটি 16-বিট সাইজের সংখ্যা হতে পারে।
+  col5  Int @db.UnsignedSmallInt // UNSIGNED Small Integer length 6 Equivalent Column
+
+  col6  Int @db.MediumInt // Medium Integer length 9 Equivalent Column
+  col7  Int @db.UnsignedMediumInt  //UNSIGNED Medium Integer length 8 Equivalent Column
+
+  col8  Int @db.TinyInt  // Tiny Integer length 4 Equivalent Column
+  col9  Int @db.UnsignedTinyInt // UNSIGNED Tiny Integer length 3 Equivalent Column
+
+  col10 Decimal  // decimal(65,30) 	Equivalent Column
+  col11 Float // Double Equivalent Column
+  col12 Float @db.Float // Float Equivalent Column
+
+  col13 BigInt @default(10) //Default Value 10 Big Integer length 20  Equivalent Column
+
+  col14 BigInt @unique  //Unique Big Integer length 20  Equivalent Column
+
+  উদাহরণ হিসেবে, আপনি যদি একটি "ইমেইল" ফিল্ড আপনার মডেলে সংজ্ঞানা করেন এবং এই ইমেইল গুলি সার্বিক ইউনিক হয়, 
+  তাহলে ডেকোরেটর @unique ব্যবহার করে এই ফিল্ডটিকে ইউনিক কনস্ট্রেইন্ট হিসেবে চিহ্নিত করতে পারেন। 
+  এটি নির্দিষ্ট ইউনিক ইমেইল ঠিকানা দ্বারা একটি ব্যবহারকারী একবার মাত্র নিবন্ধন করতে সাহায্য করতে পারে 
+  এবং ডেটাবেসে ডুপ্লিকেট ইমেইল ঠিকানা সহ প্রাক্তন রেখাগুলি বাদ দেয়।
+
+  মূলত, @unique ডেকোরেটর ব্যবহার করা হয় ডেটাবেসে ডেটা ইন্টিগ্রিটি বজায় রাখার জন্য, 
+  সেটি নির্দিষ্ট ফিল্ডের মানের ইউনিকতা নিশ্চিত করে।
+
+}

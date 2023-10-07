@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider="mysql"
+  url= env("DATABASE_URL")
+}
+
+//npx prisma migrate dev
+
+
+@db.Blob প্রিজমা মডেলের একটি ডেকোরেটর, যা একটি ডেটাবেস ফিল্ডে বাইনারি ডেটা 
+(যেমন, ছবি, ভিডিও, ডকুমেন্ট, অডিও ইত্যাদি) সংরক্ষণ করার জন্য ব্যবহার করা হয়।
+
+এই ডেকোরেটর ডেটাবেসে বাইনারি ডেটা স্টোর করতে ব্যবহার করা হয়, এবং ডেটাবেসে এই ফিল্ডের মান 
+একটি বাইনারি বিট স্ট্রিম হিসেবে স্টোর করা হয়।
+
+উদাহরণ হিসেবে, আপনি যদি একটি মডেলে ইমেজ ফাইল স্টোর করতে চান যা ডেটাবেসে বাইনারি ফরম্যাটে সংরক্ষিত থাকবে,
+তবে আপনি @db.Blob ডেকোরেটর ব্যবহার করতে পারেন। এটি একটি ফিল্ডের মান সংরক্ষণ করতে সাহায্য করবে এবং
+ডেটাবেসে তার বাইনারি ডেটা স্ট্রিম রূপে স্টোর করবে।
+
+model User {
+
+  id Int @id @default(autoincrement()) // Primary key  , Integer length 11  & Auto Increment Equivalent Column
+  col1 Bytes @db.Blob  // Blob Equivalent Column
+  col2 Bytes @db.LongBlob // Long Blob Equivalent Column
+  col3 Bytes @db.TinyBlob // Tiny Blob Equivalent Column
+  col4 Bytes @db.MediumBlob // Medium Blob Equivalent Column
+  col5 Bytes @db.Binary(100)  // Binary Equivalent Column
+  col6 Bytes @db.VarBinary(100) // Var Binary Equivalent Column
+}

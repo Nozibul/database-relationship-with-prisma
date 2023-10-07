@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//npx prisma migrate dev
+
+model User {
+  id Int @id @default(autoincrement()) // Primary key  , Integer length 11  & Auto Increment Equivalent Column
+
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt // Primary key, Integer length 11  & positive id create & Auto Increment Equivalent Column
+
+ "Unsigned" একটি সাধারণ বিগ ইন্টিজার মত একটি পূর্ণসংখ্যার ডেটা টাইপ নির্দেশ করে, কিন্তু এটি নেগেটিভ মান গ্রহণ করবে না। অর্থাৎ, এই ফিল্ডের মান শূন্য বা তার চেয়ে বড় হতে হবে।
+ "BigInt" দেখাচ্ছে যে এই ফিল্ডে বড় একটি সংখ্যা স্টোর হবে, যা সাধারণ সংখ্যার সীমার বাইরে হতে পারে। এটি বড় একটি সংখ্যা স্টোর করতে ব্যবহৃত হয়, যেটি অতি বড় সংখ্যা মান সহ হতে পারে, যেটি 32 বা 64 বিট সাইজে হতে পারে।
+  
+  col1 String // Varchar Length 191 Equivalent Column
+
+  col2 String? //Nullable Varchar Length 191 Equivalent Column
+
+  col3 String @default("Bangladesh") //Default value Bangladesh Varchar Length 191 Equivalent Column 
+
+  col4 String @db.VarChar(1000) // Varchar Length 1000 Equivalent Column
+
+  col6 String @db.TinyText // TinyText Equivalent Column
+
+  col7 String @db.Text // Text Equivalent Column
+
+  col8 String @db.LongText // Long Text Equivalent Column
+
+  col9 String @db.MediumText // Medium Text Equivalent Column    
+  
+}
