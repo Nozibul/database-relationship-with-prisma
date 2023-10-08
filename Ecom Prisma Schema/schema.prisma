@@ -52,8 +52,8 @@ model products {
   product_sliders  product_sliders? // one to one , একটি প্রোডাক্টের জন্য একটি স্লাইডার থাকবে এবং সেই স্লাইডারে অনেকগুলি স্লাইড ছবি থাকতে পারে।
   product_wishes   product_wishes[] // one to many , উইশ লিস্টে আমরা অনেকগুলি প্রোডাক্ট রেখে থাকতে পারি.
   product_carts    product_carts[]  // one to many , cart তালিকায় বিভিন্ন প্রকারের প্রোডাক্ট থাকতে পারে.
-  invoice_products invoice_products[]
-  product_reviews  product_reviews[]
+  product_reviews  product_reviews[] // one to many , একটা প্রোডাক্টের অনেকগুলো রিভিউ থাকতে পারে.
+  invoice_products invoice_products[] // one to many, user যে প্রোডাক্ট গুলো কিনবে তার information গুলো আসে প্রোডাক্ট টেবিল এ । 
  
   @@index([brand_id], map: "products_brand_id_foreign")
   @@index([category_id], map: "products_category_id_foreign")
@@ -112,8 +112,8 @@ model users {
   customer_profiles customer_profiles? // one to one ,একটি ব্যবহারকারীর জন্য একটি প্রোফাইল তৈরি হবে.
   product_wishes    product_wishes[]  // one to many , একজন ব্যবহারকারী অনেকগুলি উইশ লিস্টে সংরক্ষণ করতে পারে.
   product_carts     product_carts[]  // one to many , একজন ব্যবহারকারী একাধিক প্রোডাক্ট cart এ যোগ করতে পারে.
-  invoice_products  invoice_products[]
-  invoices          invoices[]
+  invoices          invoices[]      // one to many , একটি ব্যবহারকারীর অনেকগুলি চালান/invoice থাকতে পারে
+  invoice_products  invoice_products[] // one to many, কেউ যদি কোনো প্রোডাক্ট কেনে তাহলে ঐ প্রোডাক্ট টা কোন user এর সেটা জানতে হবে । 
 }
 
 
@@ -140,7 +140,7 @@ model customer_profiles {
   updated_at      DateTime          @default(now()) @db.Timestamp(0)
   users           users             @relation(fields: [user_id], references: [id], map: "customer_profiles_user_id_foreign")
  
-  product_reviews product_reviews[]
+  product_reviews product_reviews[] // one to many, একজন ব্যবহারকারী একাধিক review দিতে পারে এবং ব্যবহারকারীকে খুঁজে পাবো ব্যবহারকারীর প্রোফাইলে.
 }
 
 
@@ -178,8 +178,50 @@ model product_carts {
 }
 
 
+model product_reviews {
+  id                BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  description       String            @db.VarChar(1000)
+  rating            String            @db.VarChar(10)
+
+  customer_id       BigInt            @db.UnsignedBigInt
+  product_id        BigInt            @db.UnsignedBigInt
+  created_at        DateTime          @default(now()) @db.Timestamp(0)
+  updated_at        DateTime          @default(now()) @db.Timestamp(0)
+  customer_profiles customer_profiles @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "product_reviews_customer_id_foreign")
+  products          products          @relation(fields: [product_id], references: [id], onUpdate: Restrict, map: "product_reviews_product_id_foreign")
+
+  @@index([customer_id], map: "product_reviews_customer_id_foreign")
+  @@index([product_id], map: "product_reviews_product_id_foreign")
+}
+
+
+
+model invoices {
+  id               BigInt                   @id @default(autoincrement()) @db.UnsignedBigInt
+  total            String                   @db.VarChar(50)
+  vat              String                   @db.VarChar(50)
+  payable          String                   @db.VarChar(50)
+  cus_details      String                   @db.VarChar(500)
+  ship_details     String                   @db.VarChar(500)
+  tran_id          String                   @db.VarChar(100)
+  val_id           String                   @default("0") @db.VarChar(100)
+  delivery_status  invoices_delivery_status // enum data type
+  payment_status   String                   @db.VarChar(255)
+
+  user_id          BigInt                   @db.UnsignedBigInt
+  created_at       DateTime                 @default(now()) @db.Timestamp(0)
+  updated_at       DateTime                 @default(now()) @db.Timestamp(0)
+  users            users                    @relation(fields: [user_id], references: [id], map: "invoices_user_id_foreign")
+ 
+  invoice_products invoice_products[]       // one to many , একটা চালান এ অনেক গুলো প্রোডাক্ট থাকতে পারে .
+
+  @@index([user_id], map: "invoices_user_id_foreign")
+}
+
+
 model invoice_products {
   id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+
   invoice_id BigInt   @db.UnsignedBigInt
   product_id BigInt   @db.UnsignedBigInt
   user_id    BigInt   @db.UnsignedBigInt
@@ -197,25 +239,7 @@ model invoice_products {
   @@index([user_id], map: "invoice_products_user_id_foreign")
 }
 
-model invoices {
-  id               BigInt                   @id @default(autoincrement()) @db.UnsignedBigInt
-  total            String                   @db.VarChar(50)
-  vat              String                   @db.VarChar(50)
-  payable          String                   @db.VarChar(50)
-  cus_details      String                   @db.VarChar(500)
-  ship_details     String                   @db.VarChar(500)
-  tran_id          String                   @db.VarChar(100)
-  val_id           String                   @default("0") @db.VarChar(100)
-  delivery_status  invoices_delivery_status
-  payment_status   String                   @db.VarChar(255)
-  user_id          BigInt                   @db.UnsignedBigInt
-  created_at       DateTime                 @default(now()) @db.Timestamp(0)
-  updated_at       DateTime                 @default(now()) @db.Timestamp(0)
-  invoice_products invoice_products[]
-  users            users                    @relation(fields: [user_id], references: [id], map: "invoices_user_id_foreign")
 
-  @@index([user_id], map: "invoices_user_id_foreign")
-}
 
 model migrations {
   id        Int    @id @default(autoincrement()) @db.UnsignedInt
@@ -238,36 +262,10 @@ model personal_access_tokens {
   @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
 }
 
-model policies {
-  id   BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
-  type policies_type
-  des  String        @db.LongText
-}
 
 
 
-
-model product_reviews {
-  id                BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
-  description       String            @db.VarChar(1000)
-  rating            String            @db.VarChar(10)
-  customer_id       BigInt            @db.UnsignedBigInt
-  product_id        BigInt            @db.UnsignedBigInt
-  created_at        DateTime          @default(now()) @db.Timestamp(0)
-  updated_at        DateTime          @default(now()) @db.Timestamp(0)
-  customer_profiles customer_profiles @relation(fields: [customer_id], references: [id], onUpdate: Restrict, map: "product_reviews_customer_id_foreign")
-  products          products          @relation(fields: [product_id], references: [id], onUpdate: Restrict, map: "product_reviews_product_id_foreign")
-
-  @@index([customer_id], map: "product_reviews_customer_id_foreign")
-  @@index([product_id], map: "product_reviews_product_id_foreign")
-}
-
-
-
-
-
-
-
+// payment gateway
 model sslcommerz_accounts {
   id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   store_id     String    @db.VarChar(255)
@@ -282,7 +280,11 @@ model sslcommerz_accounts {
   updated_at   DateTime? @db.Timestamp(0)
 }
 
-
+model policies {
+  id   BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  type policies_type  // enum type
+  des  String        @db.LongText
+}
 
 enum policies_type {
   about
@@ -292,6 +294,8 @@ enum policies_type {
   contact
   complain
 }
+
+
 
 enum invoices_delivery_status {
   Pending
